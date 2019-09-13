@@ -1,0 +1,109 @@
+/*
+	实现打印从1到n的数（n无限制）
+	采用字符串的方式打印实现
+
+	缺点： 时间复杂度太高
+				空间复杂度过高
+*/
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<assert.h>
+#include<vld.h>
+
+
+
+int Increament(char *str)
+{
+	assert(str != NULL);
+
+	/*算法核心代码!*/
+	int flag = 0;
+	int take_temp = 0;
+	int len = strlen(str);
+	int i = 0;
+
+	for (i = len - 1; i >= 0; --i)
+	{
+		int nsum = str[i] - '0' + take_temp;
+		if (i == (len - 1))
+		{
+			nsum++;
+		}
+
+		if (nsum >= 10)
+		{
+			if (i == 0)
+			{
+				flag = 1;
+				return flag;
+			}
+			else
+			{
+				nsum -= 10;
+				take_temp = 1;
+				str[i] = nsum + '0';
+			}
+		}
+		else
+		{
+			str[i] = nsum + '0';
+			break;
+		}
+	}
+
+	return flag;
+
+}
+
+void Print(const char *str)
+{
+	assert(str != NULL);
+
+	printf("%s\t", str);
+}
+
+void Relese_memory(char *str)
+{
+	assert(str != NULL);
+
+	free(str);
+	str = NULL;
+}
+
+void 	PrintlTMaxOfDigits(const int n)
+{
+	if (n < 0)
+	{
+		printf("Error!\n");
+		exit(0);
+	}
+
+	char *str = (char *)malloc(sizeof(char) * (n + 1));		//动态开辟n+1个内存
+
+	if (str == NULL)
+		exit(0);
+	memset(str, '0', sizeof(str));		//全部初始化为'0'
+	str[n] = '\0';
+
+	while(!Increament(str))
+	{
+		Print(str);
+	}
+
+	Relese_memory(str);		//释放内存
+
+}
+
+int main()
+{
+
+	int n = 0;
+	printf("please input n numbers:>");
+	scanf("%d", &n);
+	PrintlTMaxOfDigits(n);
+	system("pause");
+	return 0;
+}
+
