@@ -1,0 +1,38 @@
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+bool Judge_is_Mosles(string& s)
+{
+	string::iterator sit = s.begin();
+	string::iterator seit = s.end() - 1;
+
+	while (sit < seit)
+	{
+		if (*sit != *seit)
+			return false;
+		sit++;
+		seit--;
+	}
+
+	return true;
+}
+
+int main()
+{
+	string main_string("aba");
+	string src_string("b");
+	int count = 0;
+
+	for (int i = 0; i <= main_string.size(); ++i)
+	{
+		string tmp_string = main_string;
+		tmp_string.insert(i, src_string);	//insert最菜效率， 不过好用。
+		if (Judge_is_Mosles(tmp_string))
+			++count;
+	}
+
+	cout << count << endl;
+	return 0;
+}
