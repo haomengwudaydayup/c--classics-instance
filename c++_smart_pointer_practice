@@ -1,0 +1,236 @@
+#include<iostream>
+#include<memory>
+
+using namespace std;
+
+//template<class T>
+//class Smart_point {
+//public:
+//	Smart_point(T* point = nullptr)
+//		:_point(point)
+//	{
+//
+//	}
+//
+//	T& operator*() {
+//		return *_point;
+//	}
+//
+//	T* operator->() {
+//		return _point;
+//	}
+//
+//	T& operator[](int num){
+//		return  _point[num];
+//	}
+//
+//	~Smart_point() {
+//		if (_point) {
+//			delete[] _point;
+//		}
+//	}
+//private:
+//	T* _point;
+//};
+
+//int* test(){
+//	int* ptr = (int*)malloc(sizeof(int) * 10);
+//
+//	memset(ptr, (int)0, sizeof(int) * 10);
+//
+//
+//	Smart_point<int> sp(ptr);
+//
+//	for (int i = 0; i < 10; ++i) {
+//		cout << sp[i] << "\t";
+//	}
+//	cout << endl;
+//
+//	return ptr;
+//
+//}
+
+//struct Date {
+//
+//	//看来struct和class是一样的， 目前认为的区别在于struct默认成员属性为共有的， class默认的成员属性是私有的。
+//
+//	int _year;
+//	int _month;
+//	int _day;
+//
+//	void Print() {
+//		//实现一个打印的接口， 体现面向对象的思想，
+//		cout << "year:\t" << _year << endl;
+//		cout << "month:\t" << _month << endl;
+//		cout << "day:\t" << _day << endl;
+//	}
+//
+//private:
+//	int _test_private_number;
+//};
+//
+//
+//
+//void test1() {
+//	Smart_point<int> sp(new int);	//接着在堆上开辟4字节大小的空间消耗。
+//	cout << "Before:" << *sp << endl;
+//	sp[0] = 20;
+//	cout << "After:" << *sp << endl;
+//
+//	cout << "\t\t" << "test2" << endl;
+//
+//	Smart_point<Date> sp_struct(new Date);
+//	cout << "Before:" << endl;
+//	sp_struct->Print();
+//	cout << endl;
+//
+//	//共有属性可以使用
+//	sp_struct->_year = 777;
+//	sp_struct->_month = 7;
+//	sp_struct->_day = 17;
+//	
+//	cout << "After:" << endl;
+//	sp_struct->Print();
+//	cout << endl;
+//
+//	//测试自定义简单智能指针over!
+//}
+
+
+//void test2() {
+//	auto_ptr<int> sp(new int);
+//	
+//	cout << "Before" << ":\t" << *sp << endl;
+//	*sp = 20;
+//	cout << "After" << ":\t" << *sp << endl;
+//	
+//	auto_ptr<int> copy(sp);		//交换权限
+//	cout << "Now -- copy" << ":\t" << *copy << endl;
+//
+//
+//
+//	//这块会存在管理权限交换问题。
+//
+//	
+//}
+//
+//void test3() {
+//	unique_ptr<int> sp(new int);
+//	cout << "Before" << ":\t" << *sp << endl;
+//	*sp = 20;
+//	cout << "After" << ":\t" << *sp << endl;
+//
+////	unique_ptr<int> copy(sp);		--		是没有能力赋值， 猜测--内部私有化拷贝赋值函数。
+//
+//
+//}
+//
+//void test4() {
+//	shared_ptr<int> sp(new int);
+//	cout << "Before" << ":\t" << *sp << endl;
+//	*sp = 20;
+//	cout << "After" << ":\t" << *sp << endl;
+//
+//	shared_ptr<int> copy(sp);	//支持赋值操作， 内部在释放资源问题，采用计数操作来操作。
+//	*sp = 521;
+//	cout << "Now -- ptr" << ":\t" << *sp << endl;
+//	*copy = 125;
+//	cout << "Now -- copy" << ":\t" << *copy << endl;
+//
+//}
+
+//自定义一个auto_ptr类
+template<class T>
+class Auto_ptr {
+public:
+	Auto_ptr(T* ptr = nullptr)
+		:_ptr(ptr)
+	{}
+
+	~Auto_ptr() {
+		if (_ptr) {
+			delete _ptr;
+		}
+	}
+
+	T& operator*() {
+		return *_ptr;
+	}
+
+	T* operator->() {
+		return _ptr;
+	}
+
+	Auto_ptr(Auto_ptr& a_ptr) {
+		_ptr = a_ptr._ptr;
+		a_ptr._ptr = nullptr;
+	}
+
+	//Auto_ptr& operator=(Auto_ptr& a_ptr) {
+	//	if (_ptr) {
+	//		delete _ptr;
+	//	}
+
+	//	_ptr = a_ptr._ptr;
+	//	a_ptr._ptr = nullptr;
+	//	return *this;
+	//}
+
+	Auto_ptr& operator=(Auto_ptr a_ptr) {
+		swap(_ptr, a_ptr._ptr);
+		return *this;
+	}
+private:
+	T* _ptr;
+};
+
+template<class T>
+class Unique_ptr {
+	//实现Unique_ptr类， 不能拷贝赋值。 这样就不会存在交换权限问题。
+public:
+	Unique_ptr(T* ptr = nullptr) 
+		:_ptr(ptr)
+	{}
+
+	~Unique_ptr() {
+		if (_ptr) {
+			delete _ptr;
+		}
+	}
+
+	T& operator*() {
+		return *_ptr;
+	}
+
+	T* operator->() {
+		return _ptr;
+	}
+
+private:
+	Unique_ptr(const Unique_ptr & u_ptr) = delete;
+	Unique_ptr& operator=(const Unique_ptr& u_ptr) = delete;
+	T* _ptr;
+};
+
+void test() {
+	Auto_ptr<int> sp(new int);
+	cout << "Before:\t" << *sp << endl;
+	*sp = 20;
+	cout << "After:\t" << *sp << endl;
+
+	Auto_ptr<int> copy(new int);
+	copy = sp;
+//	*sp = 20;
+	cout << "New:\t" << *copy << endl;
+}
+
+void test1() {
+	Unique_ptr<int> sp(new int);
+	Unique_ptr<int> sp1(new int);
+     
+}
+
+int main() {
+	test();
+	return 0;
+}
