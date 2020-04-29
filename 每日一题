@@ -1,0 +1,24 @@
+class Solution {
+public:
+    string reverseWords(string s) {
+
+        auto begin = s.begin();
+
+        while(begin != s.end()){
+            
+            auto end = begin;
+            while(*end != ' '){
+                ++end;
+                if(end == s.end()){
+                    reverse(begin, end);
+                    return s;
+                }
+            }
+
+            reverse(begin, end);
+            begin = end + 1;
+        }
+
+        return s;
+    }
+};
